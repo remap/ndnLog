@@ -5,7 +5,7 @@ colName = "ndnvideoEC2"
 dbPort = 27017 #27017 is default
 
 #delay per URI status loop
-loopDelay = 1
+loopDelay = 3
 
 #if posting via HTTP instead of writing direct to mongodb
 postURI = "http://www.avatari.org/ucla/ndnlog/log.py/postData"

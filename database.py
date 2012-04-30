@@ -116,4 +116,37 @@ def getLastForEachHost(req):
 		# don't manually build json! use internal libs...
 	#hostData = string.lstrip(hostData,",")	
 	return 'data = '+json.dumps(hostData)
+
+def getCOForAreaChart(req):
+
+	labels = []
+	values = []
+	out = ""
+	startVals = {'label':'start','values':[]}
+	for host in cfg.hosts:
+		# get all entries for host
+		fEnt = collection.find_one({'host':cfg.hosts[host]}, sort = [('_id',ASCENDING)])
+		lastEntries = collection.find({'host':cfg.hosts[host]}, sort = [('_id',DESCENDING)]).limit(3)
+		# populate host
+		labels.append(fEnt['host'])
+		# populate values
+		startVals['values'].append(fEnt['coRX'])
+		idx = 0
+		for ent in lastEntries:
+			if len(startVals['values']) == 1: # if this is first pass of values list
+				value = {'label':'','values':[]}
+				value['label'] = ent['time']
+				value['values'] = []
+				value['values'].append(ent['coRX'])
+				values.append(value)
+			else: #second pass, thus take care to append:
+				values[idx]['values'].append(ent['coRX'])
+				idx = idx + 1
+				
+	totalData = {'label':'','values':[]}
+	totalData['label'] = labels
+	values.append(startVals)
+	totalData['values'] = values
+		
+	return 'json = '+json.dumps(totalData)
 		
