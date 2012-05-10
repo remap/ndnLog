@@ -10,6 +10,7 @@ import string
 import json
 
 import config as cfg
+#87
 
 connection = Connection('localhost', cfg.dbPort)
 #db = connection.test
@@ -122,11 +123,12 @@ def getCOForAreaChart(req):
 	labels = []
 	values = []
 	out = ""
+	depth = 3
 	startVals = {'label':'start','values':[]}
 	for host in cfg.hosts:
 		# get all entries for host
 		fEnt = collection.find_one({'host':cfg.hosts[host]}, sort = [('_id',ASCENDING)])
-		lastEntries = collection.find({'host':cfg.hosts[host]}, sort = [('_id',DESCENDING)]).limit(3)
+		lastEntries = collection.find({'host':cfg.hosts[host]}, sort = [('_id',DESCENDING)]).limit(depth)
 		# populate host
 		labels.append(fEnt['host'])
 		# populate values
@@ -135,7 +137,7 @@ def getCOForAreaChart(req):
 		for ent in lastEntries:
 			if len(startVals['values']) == 1: # if this is first pass of values list
 				value = {'label':'','values':[]}
-				value['label'] = ent['time']
+				value['label'] =  ent['time']
 				value['values'] = []
 				value['values'].append(ent['coRX'])
 				values.append(value)
@@ -148,5 +150,47 @@ def getCOForAreaChart(req):
 	values.append(startVals)
 	totalData['values'] = values
 		
-	return 'json = '+json.dumps(totalData)
+	return 'json = '+json.dumps(totalData, sort_keys=True, indent=4)
 		
+def getCOForAreaChartDebug(req):
+
+	labels = []
+	values = []
+	out = ""
+	depth = 500
+	# no depth; plot everything
+	first = collection.find(sort = [('_id',ASCENDING)]).limit(len(cfg.hosts))
+	events = collection.find({},sort = [('_id',ASCENDING)]).limit(depth*len(cfg.hosts))
+	val = []
+	for e in events:
+		# we only want the *change* - 
+		val.append(float(e['coRX'])-float(first[len(val)]['coRX']))
+		if (len(val)==len(cfg.hosts)):
+			counter=len(values)+1
+			values.append({'label':str(counter),'values':val})
+			val = []
+	totalData = {'label':cfg.hosts.values(),'values':values}
+		#out += e['host']+" : "
+		#out += e['time']+" \n"
+	return 'json = '+json.dumps(totalData, sort_keys=True, indent=4)
+	
+def getCOForAreaChartDebug2(req):
+
+	labels = []
+	values = []
+	out = ""
+	startVals = {'label':'start','values':[]}
+	for host in cfg.hosts:
+		# get all entries for host
+		fEnt = collection.find_one({'host':cfg.hosts[host]}, sort = [('_id',ASCENDING)])
+		lastEntries = collection.find({'host':cfg.hosts[host]}, sort = [('_id',DESCENDING)]).limit(3)
+		# populate host
+		labels.append(fEnt['host'])
+		# populate values
+		startVals['values'].append(fEnt['coRX'])
+		idx = 0
+		for ent in lastEntries:
+			out += fEnt['host']+" : "
+			out += ent['time']+" \n"
+				
+	return out

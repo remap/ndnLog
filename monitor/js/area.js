@@ -1,6 +1,8 @@
-var labelType, useGradients, nativeTextSupport, animate, areaChart;
+var labelType, useGradients, nativeTextSupport, animate, areaChart, json;
 
 $(document).ready(function(){
+	json = "";
+	loadData()
    setInterval ( "loadData()", 3000 );
  });
 
@@ -8,7 +10,7 @@ $(document).ready(function(){
 function loadData() {   
     var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
-    xobj.open('GET', 'http://avatari.org/ucla/ndnlog/database.py/getCOForAreaChart', true);
+    xobj.open('GET', 'http://avatari.org/ucla/ndnlog/database.py/getCOForAreaChartDebug', true);
     xobj.onreadystatechange = function () {
         if (xobj.readyState == 4) {
             var jsonData = xobj.responseText;
@@ -20,10 +22,14 @@ function loadData() {
 
 
 function processData(data){
-
 	if(data != ""){
-		var json = eval('(' + data + ')');
+		if(json == ""){
+			json = eval('(' + data + ')');
+			init(json)
+		} else {
+		json = eval('(' + data + ')');
 		areaChart.updateJSON(json);
+		}
 	}
 }
 
@@ -55,10 +61,8 @@ var Log = {
 };
 
 
-function init(){
+function init(json){
     //init data
-json = {"values": [{"values": ["82780", "10012619", "9770"], "label": "611676.496806"}, {"values": ["82780", "10012619", "9770"], "label": "611672.475889"}, {"values": ["82780", "10012619", "9769"], "label": "611668.475111"}, {"values": ["81637", "9994502", "142741"], "label": "start"}], "label": ["PARC", "BORGES", "HYDRA"]};
-    //end
     var infovis = document.getElementById('infovis');
     //init AreaChart
    	areaChart = new $jit.AreaChart({
@@ -75,9 +79,9 @@ json = {"values": [{"values": ["82780", "10012619", "9770"], "label": "611676.49
       },
       labelOffset: 10,
       //whether to display sums
-      showAggregates: true,
+      showAggregates: false,
       //whether to display labels at all
-      showLabels: true,
+      showLabels: false,
       //could also be 'stacked'
       type: useGradients? 'stacked:gradient' : 'stacked',
       //label styling
