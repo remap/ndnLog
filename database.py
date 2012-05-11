@@ -159,7 +159,7 @@ def getCOForAreaChartDebug(req):
 	labels = []
 	values = []
 	out = ""
-	depth = 20
+	depth = cfg.plotDepth
 	# 3 hosts:
 	# 20000 was ok (slow, but worked) with 3 hosts
 	# 2000 and it starts to slow down
@@ -216,8 +216,8 @@ def getCOForAreaChartDynamicHosts(req):
 	# make 'initial values'
 	iv = fb.copy()
 
-	if((allEvents.count()-depth*len(hosts))>0):
-		skipVal = allEvents.count()-depth*len(hosts)
+	#if((allEvents.count()-depth*len(hosts))>0):
+	#	skipVal = allEvents.count()-depth*len(hosts)
 
 	# get subset to plot
 	events = collection.find({},sort = [('time',ASCENDING)]).limit(depth*len(hosts)).skip(skipVal)
