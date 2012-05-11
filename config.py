@@ -1,6 +1,6 @@
 # mongodb collection name
 #colName = "ndnvideoEC2"
-colName = "ndnvideoEC2_9" #_5 is naked ccnid for host
+colName = "ndnvideoEC2_11" #_5 is naked ccnid for host
 
 # mongod port
 dbPort = 27017 #27017 is default

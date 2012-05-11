@@ -31,6 +31,7 @@ function processData(data){
 		//areaChart.canvas.clear()
 		//areaChart.updateJSON(json);
 		areaChart.loadJSON(json);
+		drawLegend()
 		//init(json)
 		}
 	}
@@ -108,14 +109,18 @@ function init(json){
     //load JSON data.
     areaChart.loadJSON(json);
     //end
-    var list = $jit.id('id-list'),
-        button = $jit.id('update'),
+    var button = $jit.id('update'),
         restoreButton = $jit.id('restore');
 
     //restore graph on click
     $jit.util.addEvent(restoreButton, 'click', function() {
       areaChart.restore();
     });
+	drawLegend()
+}
+
+function drawLegend(){
+ var list = $jit.id('id-list')
     //dynamically add legend to list
     var legend = areaChart.getLegend(),
         listItems = [];
