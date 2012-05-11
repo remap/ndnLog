@@ -7,6 +7,8 @@ import time
 from decimal import *
 import database as data
 
+sysStartTime = time.time()
+
 while True:
     time.sleep(cfg.loopDelay)
     for URI in cfg.URIs:
@@ -17,16 +19,15 @@ while True:
         except:
         	print "there is a problem, one of the hosts is down: ",URI
         	break
-
-
-        #get time
+		
+        #get ccnd time
         now = getattr(soup.find('now'), 'string', None)
         starttime = getattr(soup.find('starttime'), 'string', None)
     
         #get hostname
         ccndid = getattr(soup.find('ccndid'), 'string', None)
         host = cfg.hosts.get(ccndid,"Unknown")
-    
+    	
         # get total CO sent
         co = soup.find('cobs')
         txCO = getattr(co.find('sent'), 'string', None)
@@ -34,9 +35,11 @@ while True:
         # get total Interests Received
         co = soup.find('interests')
         rxINT = getattr(co.find('accepted'), 'string', None)
-
-        print Decimal(now)-Decimal(starttime), host, txCO, rxINT
-        
+        #per-host time is not needed right now... 
+		#let's replace w/ experiment time
+        expTime = time.time()-sysStartTime
+        #print Decimal(now)-Decimal(starttime), host, txCO, rxINT
+        print expTime, host, txCO, rxINT, ccndid
 
         #log to server
         #time, host, co, int
@@ -45,4 +48,4 @@ while True:
         #print result.read()
         
         #log to server
-        data.logDatabase(statusXML, str(Decimal(now)-Decimal(starttime)), host, txCO, rxINT)
+        data.logDatabase(statusXML, expTime, ccndid, host, txCO, rxINT)

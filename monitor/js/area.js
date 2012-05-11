@@ -10,7 +10,7 @@ $(document).ready(function(){
 function loadData() {   
     var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
-    xobj.open('GET', 'http://avatari.org/ucla/ndnlog/database.py/getCOForAreaChartDebug', true);
+    xobj.open('GET', 'http://avatari.org/ucla/ndnlog/database.py/getCOForAreaChartDynamicHosts', true);
     xobj.onreadystatechange = function () {
         if (xobj.readyState == 4) {
             var jsonData = xobj.responseText;
@@ -28,7 +28,10 @@ function processData(data){
 			init(json)
 		} else {
 		json = eval('(' + data + ')');
-		areaChart.updateJSON(json);
+		//areaChart.canvas.clear()
+		//areaChart.updateJSON(json);
+		areaChart.loadJSON(json);
+		//init(json)
 		}
 	}
 }
@@ -69,7 +72,7 @@ function init(json){
       //id of the visualization container
       injectInto: 'infovis',
       //add animations
-      animate: true,
+      animate: false,
       //separation offsets
       Margin: {
         top: 5,

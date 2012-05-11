@@ -6,8 +6,10 @@ from pymongo.errors import CollectionInvalid
 import datetime
 import time
 from pymongo import ASCENDING, DESCENDING
+from pymongo.code import Code
 import string
 import json
+from decimal import *
 
 import config as cfg
 #87
@@ -41,13 +43,13 @@ def writeDatabase(name, email, title, comment):
 	
 	return lastID
 	
-def logDatabase(statusXML, runtime, host, co, int):
+def logDatabase(statusXML, runtime, ccndid, host, co, int):
     #connect to mongoDB
 	#connection = Connection()
 	#db = connection.test
 	#collection = db.test
 	
-	data = post={"statusXML":statusXML, "time":runtime, "host":host, "coRX":co, "intTX":int}
+	data = post={"statusXML":statusXML, "time":time.time(), "ccndid":ccndid, "host":host, "coRX":co, "intTX":int}
 	
 	lastID = collection.insert(data)
 	
@@ -157,7 +159,13 @@ def getCOForAreaChartDebug(req):
 	labels = []
 	values = []
 	out = ""
-	depth = 500
+	depth = 20
+	# 3 hosts:
+	# 20000 was ok (slow, but worked) with 3 hosts
+	# 2000 and it starts to slow down
+	# 1000 is still smooth
+	# 200 will be fast
+	
 	# no depth; plot everything
 	first = collection.find(sort = [('_id',ASCENDING)]).limit(len(cfg.hosts))
 	events = collection.find({},sort = [('_id',ASCENDING)]).limit(depth*len(cfg.hosts))
@@ -173,7 +181,64 @@ def getCOForAreaChartDebug(req):
 		#out += e['host']+" : "
 		#out += e['time']+" \n"
 	return 'json = '+json.dumps(totalData, sort_keys=True, indent=4)
+
+
+def buildHosts(rec):
+	ccndidict = {}
+	for r in rec:
+		if r['ccndid'] not in ccndidict:
+			ccndidict.update({r['ccndid']:r['host']})
+	return ccndidict;
 	
+
+def getCOForAreaChartDynamicHosts(req):
+	labels = []
+	values = []
+	out = ""
+	depth = 150
+	skipVal = 0
+	# 3 hosts:
+	# 20000 was ok (slow, but worked) with 3 hosts
+	# 2000 and it starts to slow down
+	# 1000 is still smooth
+	# 200 will be fast
+
+	# get all records
+	allEvents = collection.find({},sort = [('time',ASCENDING)])
+	
+	# get unique hosts from query
+	hosts = buildHosts(allEvents);
+	
+	# make 'framebuffer'
+	fb = hosts.copy()
+	for key in fb:
+		fb[key] = 0.0;
+	# make 'initial values'
+	iv = fb.copy()
+
+	if((allEvents.count()-depth*len(hosts))>0):
+		skipVal = allEvents.count()-depth*len(hosts)
+
+	# get subset to plot
+	events = collection.find({},sort = [('time',ASCENDING)]).limit(depth*len(hosts)).skip(skipVal)
+	for e in events:
+		if(iv[e['ccndid']] == 0):
+			iv[e['ccndid']] = e['coRX']
+		fb[e['ccndid']]=(float(e['coRX']) - float(iv[e['ccndid']]))
+		counter=len(values)+1
+		#make framebuffer
+		values.append({'label':str(counter),'values':fb.values()})
+	
+	totalData = {'label':hosts.values(),'values':values, 'debug':iv}
+	
+
+	return 'json = '+json.dumps(totalData, sort_keys=True, indent=4)
+
+
+def getFirstEvent():
+	return True
+
+
 def getCOForAreaChartDebug2(req):
 
 	labels = []
@@ -194,3 +259,15 @@ def getCOForAreaChartDebug2(req):
 			out += ent['time']+" \n"
 				
 	return out
+	
+'''
+#MAP REDUCE - sorta working ish 
+
+map = Code("function() {for (var key in this) { emit(key, null); }}")
+reduce = Code("function(key, stuff) { return null; }")
+
+result = collection.map_reduce(map,reduce,"host").distinct("_id")
+
+for doc in result:
+	out+=doc+"\n"
+'''
