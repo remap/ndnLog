@@ -1,6 +1,6 @@
 # mongodb collection name
 #colName = "ndnvideoEC2"
-colName = "ndnvideoEC2_11" #_5 is naked ccnid for host
+colName = "ndnvideoEC2_8"
 
 # mongod port
 dbPort = 27017 #27017 is default
@@ -13,10 +13,9 @@ postURI = "http://www.avatari.org/ucla/ndnlog/log.py/postData"
 
 #URIs of status XML to scrape
 URIs = ["http://hydra.remap.ucla.edu:9695/?f=xml",
-        "http://borges.metwi.ucla.edu:9695/?f=xml",
-        "http://ccngw.parc.xerox.com:9695/?f=xml",
-        "http://ndn.cs.illinois.edu:9695/?f=xml",
-        "http://nanolake.homeip.net:9695/?f=xml"]
+        "http://borges.metwi.ucla.edu:9695/?f=xml"]
+       # "http://ccngw.parc.xerox.com:9695/?f=xml",
+        #"http://ndn.cs.illinois.edu:9695/?f=xml"]
 
 
 #CCNDID to Hostname mapping - to augment dynamic 
