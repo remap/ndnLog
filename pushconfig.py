@@ -1,15 +1,15 @@
 # mongodb collection name
 #colName = "ndnvideoEC2"
-colName = "ndnvideoEC2_10" #_5 is naked ccnid for host
+colName = "ndnvideoEC2_0" #_5 is naked ccnid for host
 
 # mongod port
 dbPort = 27017 #27017 is default
 
 #delay per URI status loop
-loopDelay =0.5
+loopDelay =2
 
 #if posting via HTTP instead of writing direct to mongodb
-postURI = "http://www.avatari.org/ucla/ndnlog/database.py/logDatabase"
+postURI = "http://borges.metwi.ucla.edu/ec2/ndnLog/database.py/logDatabase"
 
 #URIs of status XML to scrape
 URIs = ["http://localhost:9695/?f=xml"]

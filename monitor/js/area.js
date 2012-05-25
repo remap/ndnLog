@@ -10,7 +10,7 @@ $(document).ready(function(){
 function loadData() {   
     var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
-    xobj.open('GET', 'http://avatari.org/ucla/ndnlog/database.py/getCOForAreaChartDynamicHostname', true);
+    xobj.open('GET', 'http://borges.metwi.ucla.edu/ec2/ndnLog/database.py/getCOForAreaChartDynamicHostname', true);
     xobj.onreadystatechange = function () {
         if (xobj.readyState == 4) {
             var jsonData = xobj.responseText;

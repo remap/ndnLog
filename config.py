@@ -1,6 +1,6 @@
 # mongodb collection name
 #colName = "ndnvideoEC2"
-colName = "ndnvideoEC2_8"
+colName = "ndnvideoEC2_0"
 
 # mongod port
 dbPort = 27017 #27017 is default
@@ -9,7 +9,7 @@ dbPort = 27017 #27017 is default
 loopDelay =2
 
 #if posting via HTTP instead of writing direct to mongodb
-postURI = "http://www.avatari.org/ucla/ndnlog/log.py/postData"
+postURI = "http://borges.metwi.ucla.edu/ec2/ndnLog/log.py/postData"
 
 #URIs of status XML to scrape
 URIs = ["http://hydra.remap.ucla.edu:9695/?f=xml",
