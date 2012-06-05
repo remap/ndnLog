@@ -1,2 +1,4 @@
 #!/bin/sh
+echo "starting instances..."
 ec2-run-instances ami-11510b54 -k uclandn_alexnano -t t1.micro --region us-west-1 -n $1
+echo "instances started."

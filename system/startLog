@@ -1,3 +1,10 @@
 #!/bin/sh
-
-echo "startingLog"
+if [ -z "$(pgrep -f "aggregator.py")" ]
+then
+	ssh nano@localhost /usr/bin/python /home/nano/ec2/ndnLog/aggregator.py >> /home/nano/ec2/ndnLog/aggregator.log &
+	#> /home/ec2/aggregator.log
+	echo "starting borges & hydra log"
+else 
+	echo "logger already running"
+fi
+exit

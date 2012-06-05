@@ -29,9 +29,20 @@ connection = Connection('localhost', int(config.get("mongo", "dbPort")))
 colName = str(config.get("mongo", "colName"))
 colName = colName+str(config.get("mongo", "lognumber"))
 
-
 db = connection[colName]
 collection = db[colName]
+
+def resetConnection():
+	# this is required to re-load config parameters after 'reset'
+	config = ConfigParser.RawConfigParser()
+	configFile = os.path.dirname(__file__)+'/logger.cfg'
+	config.readfp(open(configFile))
+	colName = str(config.get("mongo", "colName"))
+	colName = colName+str(config.get("mongo", "lognumber"))
+	
+	db = connection[colName]
+	collection = db[colName]
+
 
 def index(req):
     sys.stderr = sys.stdout
@@ -40,8 +51,8 @@ def index(req):
     anotherMethod(req)
     #writeDatabase(req)
 
-def anotherMethod(req):
-    req.write("another method...\n"+colName)
+def anotherMethod():
+    return "another method...\n"+colName
 
 def writeDatabase(name, email, title, comment):
     #connect to mongoDB
@@ -209,6 +220,7 @@ def buildHostnames2(rec):
 
 # this works with hostnames, not CCNDIDs
 def getCOForAreaChartDynamicHostname(req):
+    resetConnection()
     labels = []
     values = []
     out = ""
