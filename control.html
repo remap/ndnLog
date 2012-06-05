@@ -1,0 +1,39 @@
+<html>
+<head>
+
+</head><body>
+<h4>NDN EC2 Traffic Visualizer Control</h4>
+<hr>
+<h4>LOG:</h4>
+<form enctype="multipart/form-data" action="control.py/logStart" method="post" target="output">
+	  <p><input type="submit" value="START"></p>
+</form>
+<form enctype="multipart/form-data" action="control.py/logStop" method="post" target="output">
+	  <p><input type="submit" value="STOP"></p>
+</form>
+<form enctype="multipart/form-data" action="control.py/logReset" method="post" target="output">
+	  <p><input type="submit" value="RESET"></p>
+</form>
+
+<hr>
+<h4>CLOUD:</h4>
+
+<form enctype="multipart/form-data" action="control.py/ec2Start" method="post" target="output">
+	<input type="submit" value="START">
+	<select name="howmany" size="1">
+  		<option value="1">1</option>
+  		<option value="2">2</option>
+  		<option value="3">3</option>
+  		<option value="4">4</option>
+  		<option value="5">5</option>
+	</select>
+</form>
+
+<form enctype="multipart/form-data" action="control.py/ec2Stop" method="post"  target="output">
+	  <p><input type="submit" value="STOP"></p>
+</form>
+
+<iframe style='width: 300px; height: 500px;  border: 1px solid #000000;' name='output'></iframe>  
+
+
+</body></html>

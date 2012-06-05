@@ -1,0 +1,2 @@
+#!/bin/sh
+for i in `ec2din --region us-west-1 | grep running | cut -f2`; do ec2kill --region us-west-1 $i; done

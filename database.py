@@ -10,16 +10,28 @@ from pymongo.code import Code
 import string
 import json
 from decimal import *
+import operator
+from collections import OrderedDict
+import os
+import ConfigParser
+import io
 
-import config as cfg
-#87
+import configfile as cfg
 
-connection = Connection('localhost', cfg.dbPort)
+config = ConfigParser.RawConfigParser()
+configFile = os.path.dirname(__file__)+'/logger.cfg'
+config.readfp(open(configFile))
+
+connection = Connection('localhost', int(config.get("mongo", "dbPort")))
 #db = connection.test
-#collection = db.test
+#ollection = db.test
 
-db = connection[cfg.colName]
-collection = db[cfg.colName]
+colName = str(config.get("mongo", "colName"))
+colName = colName+str(config.get("mongo", "lognumber"))
+
+
+db = connection[colName]
+collection = db[colName]
 
 def index(req):
     sys.stderr = sys.stdout
@@ -29,7 +41,7 @@ def index(req):
     #writeDatabase(req)
 
 def anotherMethod(req):
-    req.write("another method...\n")
+    req.write("another method...\n"+colName)
 
 def writeDatabase(name, email, title, comment):
     #connect to mongoDB
@@ -57,7 +69,7 @@ def logDatabase(statusXML, runtime, ccndid, host, co, int):
 
 def clearDatabase():
     # clear collection
-    db.drop_collection(cfg.colName)
+    db.drop_collection(colName)
 
 def getEntryFromID(id):
     return(collection.find_one({"_id":id}))
@@ -182,88 +194,26 @@ def getCOForAreaChartDebug(req):
         #out += e['time']+" \n"
     return 'json = '+json.dumps(totalData, sort_keys=True, indent=4)
 
-
-def buildHosts(rec):
-    ccndidict = {}
-    for r in rec:
-        if r['ccndid'] not in ccndidict:
-            ccndidict.update({r['ccndid']:r['host']})
-    return ccndidict;
-
+# this builds hosts based on Hostname
 def buildHostnames(rec):
     hostdict = {}
     for r in rec:
         if r['host'] not in hostdict:
             hostdict.update({r['host']:r['ccndid']})
-    return hostdict;
+    return OrderedDict(sorted(hostdict.items(), key=lambda t: t[0]))
+    #return hostdict;
 
-# this works via CCNDID, which does not work in cloud / same CCNDID per instance
-def getCOForAreaChartDynamicHosts(req):
-    labels = []
-    values = []
-    out = ""
-    depth = 100
-    skipVal = 0
-    # 3 hosts:
-    # 20000 was ok (slow, but worked) with 3 hosts
-    # 2000 and it starts to slow down
-    # 1000 is still smooth
-    # 200 will be fast
+def buildHostnames2(rec):
+	d = {'HYDRA':1,'ip-10-178-67-192':2,'BORGES':0}
+	return OrderedDict(sorted(d.items(), key=lambda t: t[0]))
 
-    # get all records
-    allEvents = collection.find({},sort = [('time',ASCENDING)])
-
-    # get unique hosts from query
-    hosts = buildHosts(allEvents);
-
-    # make 'framebuffer'
-    fb = hosts.copy()
-    for key in fb:
-        fb[key] = 0.0;
-    # make 'initial values' 
-    iv = fb.copy()
-
-    #if((allEvents.count()-depth*len(hosts))>0):
-    #       skipVal = allEvents.count()-depth*len(hosts)
-
-    if((allEvents.count()>depth)):
-        skipVal = allEvents.count()-depth
-
-	# it would be nice to 'rewind' instead of doing another query just to reset the cursor after iterating through in above loop
-	# but until i figure out how:
-    allEvents = collection.find({},sort = [('time',ASCENDING)])
-	
-    for e in allEvents:
-	    if(iv[e['ccndid']] == 0):
-		    iv[e['ccndid']] = e['coRX']
-
-    # get subset to plot
-    events = collection.find({},sort = [('time',ASCENDING)]).skip(skipVal)
-    for e in events:
-        #if(iv[e['ccndid']] == 0):
-        #       iv[e['ccndid']] = e['coRX']
-        fb[e['ccndid']]=(float(e['coRX']) - float(iv[e['ccndid']]))
-        counter=len(values)+1
-        #make framebuffer
-        values.append({'label':str(counter),'values':fb.values()})
-
-    totalData = {'label':hosts.values(),'values':values, 'debug':iv}
-
-
-    return 'json = '+json.dumps(totalData, sort_keys=True, indent=4)
-
-# this is designed to work with hostnames, not CCNDID
+# this works with hostnames, not CCNDIDs
 def getCOForAreaChartDynamicHostname(req):
     labels = []
     values = []
     out = ""
     depth = 100
     skipVal = 0
-    # 3 hosts:
-    # 20000 was ok (slow, but worked) with 3 hosts
-    # 2000 and it starts to slow down
-    # 1000 is still smooth
-    # 200 will be fast
 
     # get all records
     allEvents = collection.find({},sort = [('time',ASCENDING)])
@@ -278,9 +228,7 @@ def getCOForAreaChartDynamicHostname(req):
     # make 'initial values' 
     iv = fb.copy()
 
-    #if((allEvents.count()-depth*len(hosts))>0):
-    #       skipVal = allEvents.count()-depth*len(hosts)
-
+	# this makes sure we 'tail' the data, rather than just always plotting first N elements
     if((allEvents.count()>depth)):
         skipVal = allEvents.count()-depth
 
@@ -288,6 +236,7 @@ def getCOForAreaChartDynamicHostname(req):
 	# but until i figure out how:
     allEvents = collection.find({},sort = [('time',ASCENDING)])
 
+	# build initial values
     for e in allEvents:
 	    if(iv[e['host']] == 0):
 		    iv[e['host']] = e['coRX']
@@ -295,17 +244,18 @@ def getCOForAreaChartDynamicHostname(req):
     # get subset to plot
     events = collection.find({},sort = [('time',ASCENDING)]).skip(skipVal)
     for e in events:
-        #if(iv[e['ccndid']] == 0):
-        #       iv[e['ccndid']] = e['coRX']
+		#subtract initial value from current value
         fb[e['host']]=(float(e['coRX']) - float(iv[e['host']]))
         counter=len(values)+1
-        #make framebuffer
+        #fill frame
         values.append({'label':str(counter),'values':fb.values()})
 
-    totalData = {'label':hosts.keys(),'values':values, 'debug':iv}
+	#sorted_x = sorted(x.iteritems(), key=operator.itemgetter(1))
+
+    totalData = {'label':fb.keys(),'values':values, 'debug':iv}
 
 
-    return 'json = '+json.dumps(totalData, sort_keys=True, indent=4)
+    return 'json = '+json.dumps(totalData, sort_keys=False, indent=4)
 
 
 
