@@ -3,7 +3,7 @@ var labelType, useGradients, nativeTextSupport, animate, areaChart, json;
 $(document).ready(function(){
 	json = "";
 	loadData()
-   setInterval ( "loadData()", 3000 );
+   setInterval ( "loadData()", 4000 );
  });
 
 
@@ -28,7 +28,7 @@ function processData(data){
 			init(json)
 		} else {
 		json = eval('(' + data + ')');
-		//areaChart.canvas.clear()
+		//areaChart.canvas.clear()jit
 		//areaChart.updateJSON(json);
 		areaChart.loadJSON(json);
 		drawLegend()
@@ -128,5 +128,6 @@ function drawLegend(){
       listItems.push('<div class=\'query-color\' style=\'background-color:'
           + legend[name] +'\'>&nbsp;</div>' + name);
     }
+    listItems.reverse();
     list.innerHTML = '<li>' + listItems.join('</li><li>') + '</li>';
 }

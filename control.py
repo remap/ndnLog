@@ -17,7 +17,7 @@ def logStart():
 	return result
 	
 def logStop():
-	fullCLI = "ssh ec2@borges.metwi.ucla.edu /home/ec2/system/stopLog"
+	fullCLI = "ssh nano@borges.metwi.ucla.edu /home/ec2/system/stopLog"
 	result = commands.getoutput(fullCLI)
 	return result
 

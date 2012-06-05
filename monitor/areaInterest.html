@@ -17,33 +17,31 @@
 <script language="javascript" type="text/javascript" src="js/jquery-1.7.2.js"></script>
 
 <!--js -->
-<script language="javascript" type="text/javascript" src="js/area.js"></script>
+<script language="javascript" type="text/javascript" src="js/areaContent.js"></script>
 </head>
 
 <div id="container">
 
 <div id="left-container">
 
-
-
         <div class="text">
         <h4>
-Traffic Chart
+NDN Interest Traffic
         </h4> 
 
-            This chart shows aggregate traffic (NDN Content Objects) propagating from a single host (hydra) through UCLA hub (borges) and to consuming EC2 instances. <br /><br />
+            This chart shows aggregate traffic (NDN Interests) propagating from consuming EC2 instances through UCLA hub (borges) and to a single publisher (hydra) if they are not satisfied by borges' cache.<br /><br />
             Left-click a Stack to show just that host's traffic.<br /><br />
             Right-click to restore all hosts.<br /><br />
-            Chart auto-updates every 3 seconds. <br>
-            see last raw entry <a href="http://www.avatari.org/ucla/ndnlog/monitor/display.html">here</a>.
-            
+            Mouse over to see specific #<br /><br />
+            Chart auto-updates every 4 seconds. <br>
         </div>
         <ul id="id-list"></ul>
         <!--<a id="restore" href="#" class="theme button white">Remove Filter</a>-->
 </div>
 
 <div id="center-container">
-    <div id="infovis"></div>    
+    <div id="infovis"></div>
+    <div id="Xlabel"><h4>time (at 3 second intervals)</h4></div>    
 </div>
 
 <div id="right-container">

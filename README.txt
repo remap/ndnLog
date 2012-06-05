@@ -1,35 +1,46 @@
 ndnLog
 ================
 
-scraper for ndn hubs to watch traffic over N nodes... made for ndnvideo testing in ec2, but could be used to monitor traffic along any hosts… perhaps we'll use something for the ndnnodes themselves.
+scraper for ndn hubs to watch traffic over N nodes... made for ndnvideo testing in ec2, but could be used to monitor traffic along any hosts.
+perhaps we'll use something for the ndn nodes themselves?
 
-dependencies:
+usage:
+
+visit control.html* to start/stop log & ec2 instances. 
+
+* http://borges.metwi.ucla.edu/ec2/ndnLog/control.html
+
+specific control steps:
+1) log, press 'reset'
+2) log, press 'start'
+3) cloud, select desired instance count
+4) cloud, press 'start'
+then, when done:
+5) cloud, press 'stop'
+6) log, press 'stop'
+
+visit monitor/area.html* to see status based on NDN Content Objects
+
+* http://borges.metwi.ucla.edu/ec2/ndnLog/monitor/area.html
+
+ToDo:
+
+fix zero at beginning
+add monitor/areaInterests.html to see status based on NDN Interest Packets
+
+ideally we could have some fancy per-namespace (per-app) chart like http://mbostock.github.com/d3/ex/stream.html
+
+
+
+install dependencies:
 
 mongodb
 apache
 mod python
-allowAccessDomain * in apache headers
+allowAccessDomain * in apache headers (for ajax data load across all browsers)
 
 description:
 'aggregator.py' scrapes :9695 status pages into database. 
 'database.py' formats data to json for display.
 'monitor/display.html' is a basic plot of last data view.
-'monitor/area.html' is a first pass at an area chart, showing 3 hosts. 
-
-usage:
-
-aggregator.py must run on web host to create data
-visit monitor/display.html and/or monitor/area.html to see status based on data
-
-
-ToDo:
-
-dynamic host list
-	right now, all hostnames are in config (which is fine for borges, hydra, etc) - but not for ec2 instances. 
-
-realtime display
-	right now, the aggregate/historic is displaying. 
-	The UI refreshes every N seconds, but the 'update' function for the chart requires 1:1 data mapping. 
-	thus we cannot give new datapoints; simply update the old ones… so realtime will require some filter / 'framebuffer' / data abstraction
-
-ideally we could have some fancy per-namespace (per-app) chart like http://mbostock.github.com/d3/ex/stream.html
+'monitor/area.html' is an area chart of traffic.

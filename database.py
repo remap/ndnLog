@@ -258,9 +258,14 @@ def getCOForAreaChartDynamicHostname(req):
     for e in events:
 		#subtract initial value from current value
         fb[e['host']]=(float(e['coRX']) - float(iv[e['host']]))
-        counter=len(values)+1
-        #fill frame
-        values.append({'label':str(counter),'values':fb.values()})
+        #fill frame only if all nonzero
+        nonzero = True
+        for i in fb.values():
+        	if int(i) == 0:
+        		nonzero = False
+        if(nonzero):
+        	counter=len(values)+1
+        	values.append({'label':str(counter),'values':fb.values()})
 
 	#sorted_x = sorted(x.iteritems(), key=operator.itemgetter(1))
 
@@ -269,6 +274,62 @@ def getCOForAreaChartDynamicHostname(req):
 
     return 'json = '+json.dumps(totalData, sort_keys=False, indent=4)
 
+
+# this works with hostnames, not CCNDIDs
+def getInterestsForAreaChartDynamicHostname(req):
+    resetConnection()
+    labels = []
+    values = []
+    out = ""
+    depth = 100
+    skipVal = 0
+
+    # get all records
+    allEvents = collection.find({},sort = [('time',ASCENDING)])
+
+    # get unique hosts from query
+    hosts = buildHostnames(allEvents);
+
+    # make 'framebuffer'
+    fb = hosts.copy()
+    for key in fb:
+        fb[key] = 0.0;
+    # make 'initial values' 
+    iv = fb.copy()
+
+	# this makes sure we 'tail' the data, rather than just always plotting first N elements
+    if((allEvents.count()>depth)):
+        skipVal = allEvents.count()-depth
+
+	# it would be nice to 'rewind' instead of doing another query just to reset the cursor after iterating through in above loop
+	# but until i figure out how:
+    allEvents = collection.find({},sort = [('time',ASCENDING)])
+
+	# build initial values
+    for e in allEvents:
+	    if(iv[e['host']] == 0):
+		    iv[e['host']] = e['intTX']
+
+    # get subset to plot
+    events = collection.find({},sort = [('time',ASCENDING)]).skip(skipVal)
+    for e in events:
+		#subtract initial value from current value
+        fb[e['host']]=(float(e['intTX']) - float(iv[e['host']]))
+        #fill frame only if all nonzero
+        nonzero = True
+        for i in fb.values():
+        	if int(i) == 0:
+        		nonzero = False
+        if(nonzero):
+        	counter=len(values)+1
+        	values.append({'label':str(counter),'values':fb.values()})
+
+	#sorted_x = sorted(x.iteritems(), key=operator.itemgetter(1))
+
+    totalData = {'label':fb.keys(),'values':values, 'debug':iv}
+
+
+    return 'json = '+json.dumps(totalData, sort_keys=False, indent=4)
 
 
 def getFirstEvent():

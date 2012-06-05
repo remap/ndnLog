@@ -1,0 +1,4 @@
+Note everything else in GIT belongs in web docroot
+/srv/www/htdocs/ec2/ndnLog
+except for these files, which are run by ec2 and thus belong in 
+/home/ec2/system

@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>NDN Log Visualizer - aggregate traffic among N hosts</title>
+
+<!-- CSS Files -->
+<link type="text/css" href="css/base.css" rel="stylesheet" />
+<link type="text/css" href="css/AreaChart.css" rel="stylesheet" />
+
+<!--[if IE]><script language="javascript" type="text/javascript" src="../../Extras/excanvas.js"></script><![endif]-->
+
+<!-- JIT Library File -->
+<script language="javascript" type="text/javascript" src="js/jit-yc.js"></script>
+
+<!-- JQUERY -->
+<script language="javascript" type="text/javascript" src="js/jquery-1.7.2.js"></script>
+
+<!--js -->
+<script language="javascript" type="text/javascript" src="js/areaContent.js"></script>
+</head>
+
+<div id="container">
+
+<div id="left-container">
+
+        <div class="text">
+        <h4>
+NDN Content Object Traffic
+        </h4> 
+
+            This chart shows aggregate traffic (NDN Content Objects) propagating from a single host (hydra) through UCLA hub (borges) and to consuming EC2 instances. <br /><br />
+            Left-click a Stack to show just that host's traffic.<br /><br />
+            Right-click to restore all hosts.<br /><br />
+            Mouse over to see specific #<br /><br />
+            Chart auto-updates every 4 seconds. <br>
+        </div>
+        <ul id="id-list"></ul>
+        <!--<a id="restore" href="#" class="theme button white">Remove Filter</a>-->
+</div>
+
+<div id="center-container">
+    <div id="infovis"></div>
+    <div id="Xlabel"><h4>time (at 3 second intervals)</h4></div>    
+</div>
+
+<div id="right-container">
+
+<div id="inner-details"></div>
+
+</div>
+
+<div id="log"></div>
+</div>
+</body>
+</html>
