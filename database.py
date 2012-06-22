@@ -13,6 +13,7 @@ from decimal import *
 import operator
 from collections import OrderedDict
 import os
+import commands
 import ConfigParser
 import io
 
@@ -34,15 +35,15 @@ collection = db[colName]
 
 def resetConnection():
 	# this is required to re-load config parameters after 'reset'
-	config = ConfigParser.RawConfigParser()
-	configFile = os.path.dirname(__file__)+'/logger.cfg'
 	config.readfp(open(configFile))
 	colName = str(config.get("mongo", "colName"))
 	colName = colName+str(config.get("mongo", "lognumber"))
-	
+	fullCLI = "touch /srv/www/htdocs/ec2/ndnLog/database.py"
+	result = commands.getoutput(fullCLI)
+	#return result
 	db = connection[colName]
 	collection = db[colName]
-
+	return "reset collection to \n"+colName+"\n"+result
 
 def index(req):
     sys.stderr = sys.stdout
@@ -52,14 +53,11 @@ def index(req):
     #writeDatabase(req)
 
 def anotherMethod():
-    return "another method...\n"+colName
+	resetConnection()
+	return "another method...\n"+colName
 
 def writeDatabase(name, email, title, comment):
-    #connect to mongoDB
-    #connection = Connection()
-    #db = connection.test
-    #collection = db.test
-
+    resetConnection()
     data = post={"author":name, "title":title, "text":comment, "email":email, "tags":["UCLA","TFT","festival", "test"],"date":datetime.datetime.utcnow()}
 
     lastID = collection.insert(data)
@@ -269,7 +267,7 @@ def getCOForAreaChartDynamicHostname(req):
 
 	#sorted_x = sorted(x.iteritems(), key=operator.itemgetter(1))
 
-    totalData = {'label':fb.keys(),'values':values, 'debug':iv}
+    totalData = {'label':fb.keys(),'values':values, 'debug':colName,}
 
 
     return 'json = '+json.dumps(totalData, sort_keys=False, indent=4)

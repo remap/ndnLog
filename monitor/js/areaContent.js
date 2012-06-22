@@ -31,11 +31,13 @@ function processData(data){
 		//areaChart.canvas.clear()jit
 		//areaChart.updateJSON(json);
 		areaChart.loadJSON(json);
+		clearLegend()
 		drawLegend()
 		//init(json)
 		}
-	}
-}
+	} else {
+	alert('no data')
+}}
 
 
 
@@ -130,4 +132,9 @@ function drawLegend(){
     }
     listItems.reverse();
     list.innerHTML = '<li>' + listItems.join('</li><li>') + '</li>';
+}
+
+function clearLegend(){
+ var list = $jit.id('id-list')
+	list.innerHTML =" "
 }
