@@ -19,14 +19,13 @@ then, when done:
 5) cloud, press 'stop'
 6) log, press 'stop'
 
-visit monitor/area.html* to see status based on NDN Content Objects
+visit the following to see the realtime results:
 
-* http://borges.metwi.ucla.edu/ec2/ndnLog/monitor/area.html
+* http://borges.metwi.ucla.edu/ec2/ndnLog/monitor/areaInterest.html
+* http://borges.metwi.ucla.edu/ec2/ndnLog/monitor/areaContent.html
+
 
 ToDo:
-
-fix zero at beginning
-add monitor/areaInterests.html to see status based on NDN Interest Packets
 
 ideally we could have some fancy per-namespace (per-app) chart like http://mbostock.github.com/d3/ex/stream.html
 
@@ -43,4 +42,4 @@ description:
 'aggregator.py' scrapes :9695 status pages into database. 
 'database.py' formats data to json for display.
 'monitor/display.html' is a basic plot of last data view.
-'monitor/area.html' is an area chart of traffic.
+'monitor/areaInterest.html' and areaContent.html is an area chart of traffic.
